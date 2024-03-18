@@ -13,12 +13,32 @@ const getToken = (req) => {
     return decoded.id;
 }
 
-const getPosts = async (req, res) => {
+const getAllPosts = async (req, res) => {
 
     try {
         let post = await Post.find({});
 
         return res.json({ 'status': true, 'message': 'successfully logged in', 'data': post });
+    }
+    catch (err) {
+        return res.status(400).json({ 'status': false, 'message': err });
+    }
+
+}
+
+const getPost = async (req, res) => {
+
+    try {
+
+        const { id } = req.body;
+
+        let post = await Post.find({ _id: id });
+
+        if (post.length) {
+            return res.json({ 'status': true, 'message': 'posts data available', 'data': post });
+        }
+
+        return res.json({ 'status': true, 'message': 'posts data not available' });
     }
     catch (err) {
         return res.status(400).json({ 'status': false, 'message': err });
@@ -100,7 +120,8 @@ const deletePost = async (req, res) => {
 
 
 module.exports = {
-    getPosts,
+    getAllPosts,
+    getPost,
     createPosts,
     editPosts,
     deletePost

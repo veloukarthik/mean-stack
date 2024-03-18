@@ -11,7 +11,9 @@ router.post('/register', User.register);
 
 router.post('/my-account', User.myaccount);
 
-router.get('/get-posts', Post.getPosts);
+router.get('/get-all-posts', Post.getAllPosts);
+
+router.get('/get-post',Post.getPost);
 
 router.post('/create-post', Auth, Post.createPosts);
 
