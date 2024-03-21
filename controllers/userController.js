@@ -5,6 +5,40 @@ const jwt = require('jsonwebtoken');
 
 const maxAge = 3 * 24 * 60 * 60;
 
+/**
+    * @openapi
+    * '/api/login':
+    *  post:
+    *     tags:
+    *     - User Controller
+    *     summary: Login as a user
+    *     requestBody:
+    *      required: true
+    *      content:
+    *        application/json:
+    *           schema:
+    *            type: object
+    *            required:
+    *              - email
+    *              - password
+    *            properties:
+    *              email:
+    *                type: string
+    *                default: "karthikvelou@optisolbusiness.com"
+    *              password:
+    *                type: string
+    *                default: "12345"
+    *     responses:
+    *      201:
+    *        description: Succesfully logged In
+    *      409:
+    *        description: Conflict
+    *      404:
+    *        description: Not Found
+    *      500:
+    *        description: Server Error
+    */
+
 const login = async (req, res) => {
 
     try {
@@ -35,6 +69,52 @@ const login = async (req, res) => {
 
 }
 
+
+/**
+     * @openapi
+     * '/api/register':
+     *  post:
+     *     tags:
+     *     - User Controller
+     *     summary: Create a user
+     *     requestBody:
+     *      required: true
+     *      content:
+     *        application/json:
+     *           schema:
+     *            type: object
+     *            required:
+     *              - name
+     *              - email
+     *              - password
+     *              - gender
+     *              - mobile
+     *            properties:
+     *              name:
+     *                type: string
+     *                default: johndoe 
+     *              email:
+     *                type: string
+     *                default: johndoe@mail.com
+     *              password:
+     *                type: string
+     *                default: johnDoe20!@
+     *              gender:
+     *                type: string
+     *                default: Male
+     *              mobile:
+     *                type: number
+     *                default: 91980980008
+     *     responses:
+     *      201:
+     *        description: Created
+     *      409:
+     *        description: Conflict
+     *      404:
+     *        description: Not Found
+     *      500:
+     *        description: Server Error
+     */
 
 const register = async (req, res) => {
 
