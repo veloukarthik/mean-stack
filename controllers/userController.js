@@ -18,7 +18,7 @@ const login = async (req, res) => {
             if (comparePassword) {
                 let id = user._id
 
-                var token = jwt.sign({ id }, 'posts-login', { expiresIn: maxAge });
+                let token = jwt.sign({ id }, 'posts-login', { expiresIn: maxAge });
 
                 let tokenupdate = await User.findOneAndUpdate({ email: email }, { token: token }, { new: true }).select(['name', 'email', 'mobile', 'gender', 'token']);
 
@@ -61,7 +61,7 @@ const register = async (req, res) => {
 
             let token = jwt.sign({ id }, 'posts-login', { expiresIn: maxAge });
 
-            let tokenupdate = await User.findOneAndUpdate({ email: email }, { token: token }, { new: true });
+            await User.findOneAndUpdate({ email: email }, { token: token }, { new: true });
 
             return res.status(200).json({ 'status': true, 'message': "You account is registered successfully" });
         }

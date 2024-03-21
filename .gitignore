@@ -1,1 +1,5 @@
 node_modules
+
+.scannerwork
+
+views/node_modules

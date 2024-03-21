@@ -21,6 +21,12 @@ router.put('/edit-post', Auth, Post.editPosts);
 
 router.delete('/delete-post', Auth, Post.deletePost);
 
+router.post('/add-comments',Auth,Post.addComments);
+
+router.put('/edit-comments',Auth,Post.editComments);
+
+router.delete('/delete-comments',Auth,Post.deleteComments);
+
 module.exports = router;
 
 

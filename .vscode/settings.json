@@ -1,0 +1,6 @@
+{
+    "sonarlint.connectedMode.project": {
+        "connectionId": "sonar qube connection",
+        "projectKey": "mean-stack"
+    }
+}
