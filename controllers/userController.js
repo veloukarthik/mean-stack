@@ -90,7 +90,7 @@ const myaccount = async (req, res) => {
         let users = await User.findById(userId).select(['name', 'email', 'mobile', 'gender', 'token']);
         ;
 
-        return res.status(200).json({ 'status': true, 'message': "You account details",'user':users });
+        return res.status(200).json({ 'status': true, 'message': "You account details", 'user': users });
     }
     catch (e) {
         return res.status(400).json({ 'status': false, 'message': e });

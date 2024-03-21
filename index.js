@@ -4,16 +4,18 @@ const dotenv = require('dotenv').config();
 const routes = require('./routes/routes')
 const bodyParser = require('body-parser');
 const cors = require('cors')
+const swaggerDocs = require('./swagger');
 
 const app = express();
 
 app.disable("x-powered-by");
 
 let corsOptions = {
-    origin: ['localhost:3000','localhost:5000'] // Compliant
+    origin: ['localhost:3000', 'localhost:5000'] // Compliant
 };
 
 app.use(cors(corsOptions))
+
 
 const PORT = process.env.PORT || 5000;
 
@@ -30,6 +32,8 @@ app.get("/", (req, res) => {
 })
 
 app.use('/api', routes);
+
+swaggerDocs(app, PORT)
 
 mongoose.connect(MONGO_URI, {
     family: 4

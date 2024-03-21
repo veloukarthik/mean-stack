@@ -149,9 +149,15 @@ const editComments = async (req, res) => {
 
     let user_id = getToken(req);
 
-    let updateComments = await Comments.findOneAndUpdate({ _id: id }, { comment: comment, user_id: user_id, post_id: post_id }, { new: true });
+    let check = await Comments.findOne({ _id: id });
 
-    return res.json({ 'status': true, 'message': 'successfully comments updated', 'data': updateComments });
+    if (check) {
+        let updateComments = await Comments.findOneAndUpdate({ _id: id }, { comment: comment, user_id: user_id, post_id: post_id }, { new: true });
+
+        return res.json({ 'status': true, 'message': 'successfully comments updated', 'data': updateComments });
+    }
+
+    return res.json({ 'status': true, 'message': 'comments not found' });
 
 }
 
@@ -160,12 +166,17 @@ const deleteComments = async (req, res) => {
 
     let user_id = getToken(req);
 
-    let deleteComment = await Comments.findOneAndDelete({ _id: id, user_id: user_id }, { new: true });
+    let check = await Comments.findOne({ _id: id });
 
-    if (deleteComment) {
-        return res.json({ 'status': true, 'message': 'successfully comments deleted' });
+    if (check) {
+        let deleteComment = await Comments.findOneAndDelete({ _id: id, user_id: user_id }, { new: true });
+
+        if (deleteComment) {
+            return res.json({ 'status': true, 'message': 'successfully comments deleted' });
+        }
     }
 
+    return res.json({ 'status': true, 'message': 'comments not found' });
 
 }
 
