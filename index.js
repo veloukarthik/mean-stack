@@ -11,7 +11,7 @@ const app = express();
 app.disable("x-powered-by");
 
 let corsOptions = {
-    origin: ['localhost:3000', 'localhost:5000'] // Compliant
+    origin: ['http://localhost:3000', 'http://localhost:5000','http://localhost:4200'] // Compliant
 };
 
 app.use(cors(corsOptions))

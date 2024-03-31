@@ -1,7 +1,13 @@
 const express = require('express');
 const User = require('../models/user');
+const Follows = require('../models/follows');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+
+
+
+
 
 const maxAge = 3 * 24 * 60 * 60;
 
@@ -168,20 +174,114 @@ const myaccount = async (req, res) => {
         let userId = getToken(req);
 
         let users = await User.findById(userId).select(['name', 'email', 'mobile', 'gender', 'token']);
-        ;
 
-        return res.status(200).json({ 'status': true, 'message': "You account details", 'user': users });
+        let followers = await Follows.find({ user_id: userId }).populate('follow_id', ['name', 'email', 'mobile']);
+
+        return res.status(200).json({ 'status': true, 'message': "You account details", 'user': users, 'followers': followers });
     }
     catch (e) {
         return res.status(400).json({ 'status': false, 'message': e });
     }
+}
+
+const listUsers = async (req, res) => {
+
+    let transporter = nodemailer.createTransport({
+        host: "sandbox.smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+            user: "ce6336b4ae43ef",
+            pass: "8c6c4d4241e3ed"
+        }
+    });
+
+    let mailOptions = {
+        from: 'karthikvelou93@gmail.com',
+        to: 'karthikvelou@optisolbusiness.com',
+        subject: 'Sending Email using Node.js',
+        text: 'That was easy!'
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+
+    try {
+
+        let user_id = getToken(req);
+
+        let list_user = await User.find({ _id: { $ne: user_id } });
+
+        let follows = await Follows.find({ user_id: user_id, status: true }).distinct('follow_id');
+
+        let followingUsers = list_user.map((user) => {
+
+            let follow = follows.filter((f) => f == user._id.toString() ? true : false);
+            return {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                isFollowed: follow[0] ? true : false
+            }
+        })
+
+        return res.status(200).json({ 'status': true, 'message': "followers lists", 'user': followingUsers });
+    }
+    catch (e) {
+        return res.status(400).json({ 'status': false, 'message': e });
+    }
+}
+
+const followUser = async (req, res) => {
+    try {
+
+        const { follow_id, status } = req.body;
+
+        let user_id = getToken(req);
+
+        let check = await Follows.findOne({ user_id: user_id, follow_id: follow_id });
+
+        let message = '';
+
+        if (status == 1) {
+            message = "user followed successfully";
+        }
+        else {
+            message = "user unfollowed successfully";
+        }
+
+        if (!check) {
+            let follows = await Follows.create({ user_id: user_id, follow_id: follow_id, status: status });
+
+            if (follows) {
+                return res.status(200).json({ 'status': true, 'message': message });
+            }
+        }
+        else {
+            let follows = await Follows.findOneAndUpdate({ user_id: user_id, follow_id: follow_id }, { status: status }).exec();
+
+            if (follows) {
+
+                return res.status(200).json({ 'status': true, 'message': message });
+            }
+        }
 
 
-
+        return res.status(200).json({ 'status': true, 'message': "user already followed" });
+    }
+    catch (e) {
+        return res.status(400).json({ 'status': false, 'message': e });
+    }
 }
 
 module.exports = {
     login,
     register,
-    myaccount
+    myaccount,
+    listUsers,
+    followUser
 }

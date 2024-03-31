@@ -13,6 +13,10 @@ router.post('/register', User.register);
 
 router.post('/my-account', User.myaccount);
 
+router.post('/list-users', User.listUsers);
+
+router.post('/follow-user',User.followUser);
+
 router.get('/get-all-posts', Post.getAllPosts);
 
 router.get('/get-post', Post.getPost);
