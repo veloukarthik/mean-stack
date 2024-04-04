@@ -4,7 +4,7 @@ const Follows = require('../models/follows');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-
+const Bookmarks = require('../models/bookmark');
 
 
 
@@ -60,9 +60,12 @@ const login = async (req, res) => {
 
                 let token = jwt.sign({ id }, 'posts-login', { expiresIn: maxAge });
 
+                let refreshToken = jwt.sign({ id }, 'posts-login', { expiresIn: '1d' });
+
                 let tokenupdate = await User.findOneAndUpdate({ email: email }, { token: token }, { new: true }).select(['name', 'email', 'mobile', 'gender', 'token']);
 
-                return res.json({ 'status': true, 'message': 'successfully logged in', 'data': tokenupdate });
+                return res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' })
+                    .json({ 'status': true, 'message': 'successfully logged in', 'data': tokenupdate });
             }
             return res.status(400).json({ 'status': false, 'message': 'Incorrect password' })
         }
@@ -70,6 +73,7 @@ const login = async (req, res) => {
         return res.status(400).json({ 'status': false, 'message': 'Incorrect email' });
     }
     catch (err) {
+        console.log("Error", err);
         return res.status(400).json({ 'status': false, 'message': err });
     }
 
@@ -168,6 +172,24 @@ const getToken = (req) => {
     return decoded.id;
 }
 
+const refreshtokens = (req, res) => {
+    const refreshToken = req.cookies['refreshToken'];
+    if (!refreshToken) {
+        return res.status(401).send('Access Denied. No refresh token provided.');
+    }
+
+    try {
+        const decoded = jwt.verify(refreshToken, secretKey);
+        const accessToken = jwt.sign({ user: decoded.user }, secretKey, { expiresIn: '1h' });
+
+        res
+            .header('Authorization', accessToken)
+            .send(decoded.user);
+    } catch (error) {
+        return res.status(400).send('Invalid refresh token.');
+    }
+}
+
 const myaccount = async (req, res) => {
 
     try {
@@ -177,7 +199,9 @@ const myaccount = async (req, res) => {
 
         let followers = await Follows.find({ user_id: userId }).populate('follow_id', ['name', 'email', 'mobile']);
 
-        return res.status(200).json({ 'status': true, 'message': "You account details", 'user': users, 'followers': followers });
+        let bookmarks = await Bookmarks.find({ user_id: userId, status: 1 }).populate('post_id');
+
+        return res.status(200).json({ 'status': true, 'message': "You account details", 'user': users, 'followers': followers, 'bookmarks': bookmarks });
     }
     catch (e) {
         return res.status(400).json({ 'status': false, 'message': e });
@@ -283,5 +307,6 @@ module.exports = {
     register,
     myaccount,
     listUsers,
-    followUser
+    followUser,
+    refreshtokens
 }

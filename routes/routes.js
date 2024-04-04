@@ -15,6 +15,8 @@ router.post('/my-account', User.myaccount);
 
 router.post('/list-users', User.listUsers);
 
+router.post('/refreshtokens',User.refreshtokens);
+
 router.post('/follow-user',User.followUser);
 
 router.get('/get-all-posts', Post.getAllPosts);
@@ -26,6 +28,8 @@ router.post('/create-post', Auth, Post.createPosts);
 router.put('/edit-post', Auth, Post.editPosts);
 
 router.delete('/delete-post', Auth, Post.deletePost);
+
+router.post('/bookmark-post',Post.bookmarks);
 
 router.post('/add-comments', Auth, Post.addComments);
 

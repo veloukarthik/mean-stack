@@ -5,6 +5,7 @@ const Post = require('../models/post');
 const User = require('../models/user');
 const ObjectId = require('mongoose').ObjectId;
 const Comments = require('../models/comments');
+const Bookmarks = require('../models/bookmark');
 
 const getToken = (req) => {
     const token = req.headers.authorization.split(" ");
@@ -180,6 +181,32 @@ const deleteComments = async (req, res) => {
 
 }
 
+const bookmarks = async (req, res) => {
+    const { post_id, status } = req.body;
+
+    let user_id = getToken(req);
+
+    let check = await Bookmarks.findOne({ post_id: post_id, user_id: user_id });
+
+    if (!check) {
+        let createBookmark = await Bookmarks.create({ post_id: post_id, user_id: user_id, status: status });
+
+        if (createBookmark) {
+            return res.json({ 'status': true, 'message': 'post bookmark created successfully' });
+        }
+    }
+    else {
+        let updateBookmark = await Bookmarks.findOneAndUpdate({ post_id: post_id, user_id: user_id }, { status: status }, { new: true });
+
+        if (updateBookmark) {
+            return res.json({ 'status': true, 'message': 'post bookmark updated successfully' });
+        }
+    }
+
+    return res.json({ 'status': true, 'message': 'bookmark posts not found' });
+
+}
+
 
 module.exports = {
     getAllPosts,
@@ -189,5 +216,6 @@ module.exports = {
     deletePost,
     addComments,
     editComments,
-    deleteComments
+    deleteComments,
+    bookmarks
 }

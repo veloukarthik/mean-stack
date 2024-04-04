@@ -31,8 +31,10 @@ app.get("/", (req, res) => {
     res.send("Node JS running");
 })
 
+//api part
 app.use('/api', routes);
 
+// swagger docs part
 swaggerDocs(app, PORT)
 
 mongoose.connect(MONGO_URI, {
