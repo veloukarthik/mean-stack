@@ -23,7 +23,9 @@
     "@schematics/angular": "^17.3.2",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
+    "reading-time": "^1.5.0",
     "rxjs": "~7.4.0",
+    "stream": "^0.0.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },

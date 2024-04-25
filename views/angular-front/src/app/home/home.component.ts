@@ -8,15 +8,21 @@ import { PostService } from '../services/post.service';
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private posts:PostService) { }
+  constructor(private posts: PostService) { }
+
+  postsData:any = [];
 
   ngOnInit(): void {
     let data = {
 
     }
-    this.posts.getPosts().subscribe((res)=>{
+    this.posts.getPosts().subscribe((res) => {
 
-      console.log("results",res);
+      if (res.status == true) {
+
+        this.postsData = res.data;
+      }
+      
 
     })
   }
